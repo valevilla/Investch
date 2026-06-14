@@ -47,6 +47,7 @@ import com.example.data.Paper
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.PaperViewModel
 import com.example.ui.PaperViewModelFactory
+import com.example.ui.ExportUtils
 
 class MainActivity : ComponentActivity() {
     private val viewModel: PaperViewModel by viewModels {
@@ -1907,49 +1908,104 @@ fun StepContentPane(
                 }
             }
 
-            // ACTIONS BAR
+            // EXPORT CENTER CARD
             item {
-                Row(
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)),
+                    shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(vertical = 12.dp)
+                        .border(1.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                        .testTag("export_center_card")
                 ) {
-                    // One-click Copy
-                    Button(
-                        onClick = {
-                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                            val clip = ClipData.newPlainText("LaTeX Paper Draft", compiledLaTeX)
-                            clipboard.setPrimaryClip(clip)
-                            Toast.makeText(context, "Código LaTeX copiado al portapapeles", Toast.LENGTH_SHORT).show()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.weight(1f).testTag("copy_latex_btn")
-                    ) {
-                        Icon(Icons.Default.ContentCopy, contentDescription = "Copy")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Copiar LaTeX", fontSize = 13.sp)
-                    }
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Description,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Centro de Exportación Profesional",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Exporta tu trabajo de investigación completo en formatos listos para revisión y publicación científica. Puedes compartir el código LaTeX original o generar el manuscrito formal en PDF.",
+                            fontSize = 11.5.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            lineHeight = 16.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    // Share
-                    OutlinedButton(
-                        onClick = {
-                            val shareIntent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, compiledLaTeX)
-                                type = "text/plain"
+                        // Actions grid
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Primary Action: Export PDF
+                            Button(
+                                onClick = {
+                                    ExportUtils.sharePdf(context, paper)
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                                    .testTag("export_pdf_btn")
+                            ) {
+                                Icon(Icons.Default.Description, contentDescription = "PDF")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Generar y Exportar Documento PDF (.pdf)", fontWeight = FontWeight.Bold, fontSize = 13.5.sp)
                             }
-                            context.startActivity(Intent.createChooser(shareIntent, "Compartir Paper compilable"))
-                        },
-                        shape = RoundedCornerShape(10.dp),
-                        modifier = Modifier.weight(1f).testTag("share_latex_btn")
-                    ) {
-                        Icon(Icons.Default.Share, contentDescription = "Share")
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Compartir", fontSize = 13.sp)
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                // Secondary Action: Export LaTeX (.tex)
+                                OutlinedButton(
+                                    onClick = {
+                                        ExportUtils.shareLatex(context, paper)
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(44.dp)
+                                        .testTag("export_latex_tex_btn")
+                                ) {
+                                    Icon(Icons.Default.Code, contentDescription = "LaTeX File")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Exportar LaTeX (.tex)", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                }
+
+                                // Secondary Action: Copy plain text
+                                OutlinedButton(
+                                    onClick = {
+                                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                        val clip = ClipData.newPlainText("LaTeX Paper Draft", compiledLaTeX)
+                                        clipboard.setPrimaryClip(clip)
+                                        Toast.makeText(context, "Código LaTeX copiado al portapapeles", Toast.LENGTH_SHORT).show()
+                                    },
+                                    shape = RoundedCornerShape(12.dp),
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(44.dp)
+                                        .testTag("copy_latex_btn")
+                                ) {
+                                    Icon(Icons.Default.ContentCopy, contentDescription = "Copy")
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text("Copiar LaTeX", fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                                }
+                            }
+                        }
                     }
                 }
             }
