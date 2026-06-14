@@ -1,0 +1,6 @@
+{
+  "name": "Generador de Papers Académicos",
+  "description": "Un asistente de investigación científica para generar borradores y códigos LaTeX estructurados según formatos IEEE, Springer y Elsevier asistido por IA a paso a paso.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
